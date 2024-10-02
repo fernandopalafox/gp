@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # Use a non-GUI backend
+
+matplotlib.use("Agg")  # Use a non-GUI backend
 import matplotlib.pyplot as plt
 
 # Parameters
@@ -14,17 +15,20 @@ ts = np.linspace(t_range[0], t_range[1], 10000)
 train_indices = np.sort(np.random.choice(len(ts), 50, replace=False))
 ts_test = np.sort(np.random.uniform(t_range[0], t_range[1] + 2, 100))
 
+
 # Dynamical system
 def dynamics(x: np.ndarray, xd: np.ndarray) -> np.ndarray:
     # xdd = -alpha * xd**2  # drag
-    xdd = mu * (1 - x**2) * xd - x # VDP oscillator
+    xdd = mu * (1 - x**2) * xd - x  # VDP oscillator
     return xdd
+
 
 # Kernel
 def rbf(xi: np.ndarray, xj: np.ndarray, scale: float) -> np.ndarray:
     xi = xi.reshape(-1, 1)
     xj = xj.reshape(-1, 1)
-    return np.exp(-np.abs(xi - xj.T)**2 / (2 * scale**2))
+    return np.exp(-np.abs(xi - xj.T) ** 2 / (2 * scale**2))
+
 
 # Training data
 # Numerically integrate the dynamics
@@ -39,15 +43,13 @@ for i in range(1, len(ts)):
     xds[i] = xds[i - 1] + xdds[i] * dt
     xs[i] = xs[i - 1] + xds[i] * dt
 
-# xs = np.sin(ts)
-# xds = np.cos(ts)
-
 # Plot phase
 plt.figure()
 plt.plot(xs, xds)
 plt.xlabel("x")
 plt.ylabel("xd")
 plt.savefig("phase.png")
+
 
 # Gaussian Process
 # Function that predicts position at a given time using a Gaussian Process
@@ -61,6 +63,7 @@ def gp_predict(
     mu_star = K_star.T @ K_inv @ ys_train
     cov_star = K_star_star - K_star.T @ K_inv @ K_star
     return mu_star, cov_star
+
 
 # Test the GP
 ts_train = ts[train_indices]
@@ -81,3 +84,5 @@ plt.fill_between(
 plt.legend()
 
 plt.savefig("gp.png")
+
+# Visualize covariance
