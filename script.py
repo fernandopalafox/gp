@@ -8,11 +8,11 @@ import matplotlib.pyplot as plt
 alpha = 1.0
 mu = 0.5
 scale = 1.0
-s_0 = [0.0, 1.0]
+s_0 = [0.0, 50.0]
 noise = 1e-3
 t_range = (0, 10)
 ts = np.linspace(t_range[0], t_range[1], 10000)
-train_indices = np.sort(np.random.choice(len(ts), 50, replace=False))
+train_indices = np.sort(np.random.choice(len(ts), 10, replace=False))
 ts_test = np.sort(np.random.uniform(t_range[0], t_range[1] + 2, 100))
 
 
@@ -43,14 +43,6 @@ for i in range(1, len(ts)):
     xds[i] = xds[i - 1] + xdds[i] * dt
     xs[i] = xs[i - 1] + xds[i] * dt
 
-# Plot phase
-plt.figure()
-plt.plot(xs, xds)
-plt.xlabel("x")
-plt.ylabel("xd")
-plt.savefig("phase.png")
-
-
 # Gaussian Process
 # Function that predicts position at a given time using a Gaussian Process
 def gp_predict(
@@ -72,7 +64,7 @@ mu_predict, cov_predict = gp_predict(ts_train, xs_train, ts_test, scale)
 
 # Plot the results
 plt.figure()
-plt.plot(ts, xs, label="True")
+plt.plot(ts, xs, label="True", color="gray")
 plt.plot(ts_train, xs_train, "o", label="Train")
 plt.plot(ts_test, mu_predict, "x", label="Predict")
 plt.fill_between(
@@ -80,9 +72,9 @@ plt.fill_between(
     mu_predict - np.sqrt(np.diag(cov_predict)),
     mu_predict + np.sqrt(np.diag(cov_predict)),
     alpha=0.5,
+    label="2 std",
 )
 plt.legend()
-
-plt.savefig("gp.png")
-
-# Visualize covariance
+plt.xlabel("Time")
+plt.ylabel("Position")
+plt.savefig("gp_10p_0p50v.png")
